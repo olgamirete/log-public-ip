@@ -1,5 +1,7 @@
-import requests
+import requests, os
 from datetime import datetime
+
+base_path = os.path.dirname(__file__)
 
 iso_timestamp = datetime.now().isoformat()
 
@@ -21,20 +23,20 @@ for endpoint in urls:
 
 if new_ip != '':
     try:
-        with open('backup', 'r', encoding='utf-8') as f:
+        with open(os.path.join(base_path, 'backup'), 'r', encoding='utf-8') as f:
             old_ip = f.read()
     except FileNotFoundError:
         old_ip = ''
 
     if old_ip != new_ip:
         # Public IP has changed from old_ip to new_ip.
-        with open('backup', 'w', encoding='utf-8') as f:
+        with open(os.path.join(base_path, 'backup'), 'w', encoding='utf-8') as f:
             f.write(new_ip)
-        with open('log', 'a', encoding='utf-8') as f:
+        with open(os.path.join(base_path, 'log'), 'a', encoding='utf-8') as f:
             f.write(f'{iso_timestamp}: {new_ip}\n')
     else:
         # Public IP hasn't changed.
         pass
 else:
-    with open('log', 'a', encoding='utf-8') as f:
+    with open(os.path.join(base_path, 'log'), 'a', encoding='utf-8') as f:
         f.write(f'{iso_timestamp}: could not find public ip.\n')
