@@ -1,5 +1,11 @@
-import requests, os
+import requests
+import os
 from datetime import datetime
+from telegramhelpers import sendMessage
+
+MY_USER_ID = os.getenv('MY_USER_ID')
+
+TELEGRAM_MAX_RETRIES = 3
 
 base_path = os.path.dirname(__file__)
 
@@ -32,11 +38,23 @@ if new_ip != '':
         # Public IP has changed from old_ip to new_ip.
         with open(os.path.join(base_path, 'backup'), 'w', encoding='utf-8') as f:
             f.write(new_ip)
+            msg_status = sendMessage(
+                MY_USER_ID,
+                f'Hey! Public ip has changed from "{old_ip}" to "{new_ip}".',
+                TELEGRAM_MAX_RETRIES)
         with open(os.path.join(base_path, 'log'), 'a', encoding='utf-8') as f:
-            f.write(f'{iso_timestamp}: {new_ip}\n')
+            f.write(f'{iso_timestamp}: New ip found: {new_ip}\n')
+            if msg_status != True:
+                f.write(
+                    f'{iso_timestamp}: Could not alert per Telegram of new ip.\n')
     else:
         # Public IP hasn't changed.
         pass
 else:
     with open(os.path.join(base_path, 'log'), 'a', encoding='utf-8') as f:
         f.write(f'{iso_timestamp}: could not find public ip.\n')
+        msg_status = sendMessage(
+            MY_USER_ID, 'Could not find public ip.', TELEGRAM_MAX_RETRIES)
+        if msg_status != True:
+            f.write(
+                f'{iso_timestamp}: Could not alert per Telegram that ip couldn\'t be found.\n')
