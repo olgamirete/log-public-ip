@@ -2,6 +2,7 @@ import requests
 import os
 from datetime import datetime
 from telegramhelpers import sendMessage
+from dotenv import load_dotenv
 
 MY_USER_ID = os.getenv('MY_USER_ID')
 
