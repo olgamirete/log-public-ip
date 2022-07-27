@@ -1,4 +1,4 @@
-backup
-log
-tests.py
 .env
+log
+backup
+__pycache__
